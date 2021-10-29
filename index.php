@@ -9,14 +9,16 @@
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 </head>
-
+<?php
+include("connexion.php");
+?>
 <body>
   <header>
     <h1><a href="index.html">Au jardin en boite</a></h1>
   </header>
   <div>
     <aside>
-      <form name="saisie" id="saisie">
+      <form name="saisie" id="saisie" method="post">
         <div>
           <label for="category">Catégorie :</label>
           <select id="category" name="category">
@@ -47,12 +49,47 @@
       </form>
     </aside>
     <main>
-      <div></div>
+      <?php
+      $requete = "SELECT * FROM produits WHERE 1+1 ";   
+      // si une categorie choisie trier
+      if($_POST) {//si post
+      if($_POST['category']!='Tous')
+      {
+          $requete .= " AND  type = '".strtolower($_POST['category'])."'"; 
+      }
+      if($_POST['nutriscore']!='Tous')
+      {
+          $requete .= " AND  nutriscore = '".$_POST['nutriscore']."'"; 
+      }
+      if($_POST['searchTerm']!='')
+      {
+          $requete .= " AND nom LIKE '%".$_POST['searchTerm']."%'"; 
+      }
+    }
+      // Envoi de la requête vers MySQL
+      $select = $connexion->query($requete);
+      //recu sous forme objet
+      $select->setFetchMode(PDO::FETCH_OBJ);
+      // boucle sur les produits
+      while($enregistrement = $select->fetch())
+
+{ ?>
+  
+  <section class="<?php echo $enregistrement->type ?>">
+  <h2><?php echo $enregistrement->nom ?></h2>
+  <p><?php echo $enregistrement->prix ?> €</p>
+  <img src="images/<?php echo $enregistrement->image ?>" alt="<?php echo $enregistrement->nom ?>">
+  <h3>Nutriscore : <span class="<?php echo $enregistrement->nutriscore ?>">
+  <?php echo $enregistrement->nutriscore ?></span></h3></section>
+
+<?php
+}
+    
+      ?>
     </main>
   </div>
   <footer>
   </footer>
-  <script src="can-script.js"></script>
 
 
 </body>
