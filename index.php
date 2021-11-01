@@ -41,7 +41,8 @@ include("connexion.php");
         </div>
         <div>
           <label for="searchTerm">Recherche :</label>
-          <input type="text" id="searchTerm" name="searchTerm" placeholder="ex : Petits pois">
+          <input type="text" id="searchTerm" name="searchTerm" placeholder="ex : Petits pois" <?php if(ISSET($_POST['searchTerm']))
+       echo "value=".$_POST['searchTerm']; ?>>
         </div>
         <div>
           <button>GO !</button>
@@ -50,6 +51,8 @@ include("connexion.php");
     </aside>
     <main>
       <?php
+      if(isset($_GET['first'])&&!($_POST)) { $_POST['category'] = $_GET['first']; $_POST['nutriscore']='Tous';$_POST['searchTerm']=''; echo'<span class="none">Voici nos '.$_POST['category'].'</span>';}
+      
       $requete = "SELECT * FROM produits WHERE 1+1 ";   
       // si une categorie choisie trier
       if($_POST) {//si post
@@ -71,6 +74,8 @@ include("connexion.php");
       //recu sous forme objet
       $select->setFetchMode(PDO::FETCH_OBJ);
       // boucle sur les produits
+      
+      if ($select->rowCount() > 0)
       while($enregistrement = $select->fetch())
 
 { ?>
@@ -84,6 +89,7 @@ include("connexion.php");
 
 <?php
 }
+    else echo'<span class="none">Pas de résultat pour cette recherche : '.$_POST['searchTerm'].'</span>';
     
       ?>
     </main>

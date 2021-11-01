@@ -263,6 +263,11 @@ float: left;
 padding: 10px;
 }
 
+.none {
+  font-size: 20px;
+  color: #c0392b;
+}
+
 @media (max-width: 640px) {
   /* CSS mobile ici */
   h1{
