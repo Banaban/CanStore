@@ -3,14 +3,29 @@
   <meta charset="utf-8">
   <title>The Can Store</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/css?family=Cherry+Swash|Raleway" rel="stylesheet">
   <link href="can-style.css" rel="stylesheet">
-  <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+ 
 </head>
 <?php
-include("connexion.php");
+//INIT FIRST CHOIX
+if(isset($_GET['first'])&&empty($_POST)) { 
+  $_POST['category'] = $_GET['first']; $_POST['nutriscore']='Tous';$_POST['searchTerm']=''; echo'<span class="none">Voici nos '.$_POST['category'].'</span>';
+}
+//si pas de post
+elseif(empty($_POST)) {
+  $_POST['category'] = 'Tous'; $_POST['nutriscore']='Tous';$_POST['searchTerm']='';
+}
+
+include("modele/connexion.php");
+include("modele/produits.php");
+include("modele/cat.php");
+
+//premier affichage
+
+
+// recuperation des categories
+$cats = categorie();
+
 ?>
 <body>
   <header>
@@ -22,27 +37,32 @@ include("connexion.php");
         <div>
           <label for="category">Catégorie :</label>
           <select id="category" name="category">
-            <option selected="">Tous</option>
-            <option>Legumes</option>
-            <option>Viande</option>
-            <option>Soupe</option>
+          <option <?php if ($_POST['category']=='Tous'){echo 'selected';}?> >Tous</option>
+            <?php
+            
+            foreach($cats as $cat)
+{ 
+  echo  "<option ";
+  if ($_POST['category']==$cat->type){echo 'selected';}
+  echo ">$cat->type</option>";
+}
+      ?>
           </select>
         </div>
         <div>
           <label for="nutriscore">Nutriscore :</label>
           <select id="nutriscore" name="nutriscore">
-            <option selected="">Tous</option>
-            <option>A</option>
-            <option>B</option>
-            <option>C</option>
-            <option>D</option>
-            <option>E</option>
+            <option selected>Tous</option>
+            <option <?php if ($_POST['nutriscore']=='A'){echo 'selected';}?> >A</option>
+            <option <?php if ($_POST['nutriscore']=='B'){echo 'selected';}?>>B</option>
+            <option <?php if ($_POST['nutriscore']=='C'){echo 'selected';}?>>C</option>
+            <option <?php if ($_POST['nutriscore']=='D'){echo 'selected';}?>>D</option>
+            <option <?php if ($_POST['nutriscore']=='E'){echo 'selected';}?>>E</option>
           </select>
         </div>
         <div>
           <label for="searchTerm">Recherche :</label>
-          <input type="text" id="searchTerm" name="searchTerm" placeholder="ex : Petits pois" <?php if(ISSET($_POST['searchTerm']))
-       echo "value=".$_POST['searchTerm']; ?>>
+          <input type="text" id="searchTerm" name="searchTerm" placeholder="ex : Petits pois" <?php echo "value=".$_POST['searchTerm']; ?>>
         </div>
         <div>
           <button>GO !</button>
@@ -51,46 +71,23 @@ include("connexion.php");
     </aside>
     <main>
       <?php
-      if(isset($_GET['first'])&&!($_POST)) { $_POST['category'] = $_GET['first']; $_POST['nutriscore']='Tous';$_POST['searchTerm']=''; echo'<span class="none">Voici nos '.$_POST['category'].'</span>';}
-      
-      $requete = "SELECT * FROM produits WHERE 1+1 ";   
-      // si une categorie choisie trier
-      if($_POST) {//si post
-      if($_POST['category']!='Tous')
-      {
-          $requete .= " AND  type = '".strtolower($_POST['category'])."'"; 
-      }
-      if($_POST['nutriscore']!='Tous')
-      {
-          $requete .= " AND  nutriscore = '".$_POST['nutriscore']."'"; 
-      }
-      if($_POST['searchTerm']!='')
-      {
-          $requete .= " AND nom LIKE '%".$_POST['searchTerm']."%'"; 
-      }
-    }
-      // Envoi de la requête vers MySQL
-      $select = $connexion->query($requete);
-      //recu sous forme objet
-      $select->setFetchMode(PDO::FETCH_OBJ);
-      // boucle sur les produits
-      
-      if ($select->rowCount() > 0)
-      while($enregistrement = $select->fetch())
-
+// recuperation des produits
+$resultats = selection($_POST['category'] ,$_POST['nutriscore'],$_POST['searchTerm']);
+   
+    if ( is_string($resultats)) echo $resultats;
+    else
+    foreach($resultats as $objet)
 { ?>
   
-  <section class="<?php echo $enregistrement->type ?>">
-  <h2><?php echo $enregistrement->nom ?></h2>
-  <p><?php echo $enregistrement->prix ?> €</p>
-  <img src="images/<?php echo $enregistrement->image ?>" alt="<?php echo $enregistrement->nom ?>">
-  <h3>Nutriscore : <span class="<?php echo $enregistrement->nutriscore ?>">
-  <?php echo $enregistrement->nutriscore ?></span></h3></section>
+  <section class="<?php echo $objet->type ?>">
+  <h2><?php echo $objet->nom ?></h2>
+  <p><?php echo $objet->prix ?> €</p>
+  <img src="images/<?php echo $objet->image ?>" alt="<?php echo $objet->nom ?>">
+  <h3>Nutriscore : <span class="<?php echo $objet->nutriscore ?>">
+  <?php echo $objet->nutriscore ?></span></h3></section>
 
 <?php
 }
-    else echo'<span class="none">Pas de résultat pour cette recherche : '.$_POST['searchTerm'].'</span>';
-    
       ?>
     </main>
   </div>
