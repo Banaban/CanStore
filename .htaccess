@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteRule http://localhost/Canstore/boutique http://localhost/Canstore/boutique.php
+RewriteRule !\.(js|ico|gif|jpg|png|css)$ index.php
+ErrorDocument 404 /404.html

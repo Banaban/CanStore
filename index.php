@@ -1,20 +1,68 @@
-<!DOCTYPE html>
-<head>
-  <meta charset="utf-8">
-  <title>The Can Store</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="can-style.css" rel="stylesheet">
- 
-</head>
 <?php
+/*** Récupération de la clé de la route ***/
+$origine = str_replace(dirname($_SERVER['PHP_SELF']), '', $_SERVER['REQUEST_URI']);
+ echo $origine;
+// echo '<br>'.dirname($_SERVER['PHP_SELF']);
+// ROUTES + TXT ACCUEIL + TITLE
+// $routes = array(
+//     "/Canstore/boutique.php?first=viande" => "viande",
+//     "/Canstore/Viandes" => "viande",
+//     "/Canstore/Viande" => "viande",
+//     "/Canstore/viande" => "viande",
+//     "/Canstore/boutique.php?first=legumes" => "legumes",
+//     "/Canstore/L%C3%A9gumes" => "legumes",
+//     "/Canstore/Legumes" => "legumes",
+//     "/Canstore/boutique.php?first=soupe" => "soupe",
+//     "/Canstore/Soupes" => "soupe",
+//     "/Canstore/Soupe" => "soupe"
+// );
+// if (array_key_exists($origine, $routes)) $_GET['first']=$routes[$origine];
+/*** Création de l'url de destination ***/
+
 //INIT FIRST CHOIX
 if(isset($_GET['first'])&&empty($_POST)) { 
-  $_POST['category'] = $_GET['first']; $_POST['nutriscore']='Tous';$_POST['searchTerm']=''; echo'<span class="none">Voici nos '.$_POST['category'].'</span>';
+    $_POST['category'] = $_GET['first']; $_POST['nutriscore']='Tous';$_POST['searchTerm']='';
+  }
+  //si pas de post
+  elseif(empty($_POST)) {
+    $_POST['category'] = 'Tous'; $_POST['nutriscore']='Tous';$_POST['searchTerm']='';
+  }
+  else {
+    $choix = $_POST['category'];
+  }
+switch($origine)
+{
+    case "/Canstore/boutique.php?first=viande";
+    case "/Canstore/Viandes";
+    case "/Canstore/Viande";
+    case "/Canstore/Viande";
+        $look = array("CanStore : nos viandes", "Nos meilleurs viandes");
+        $_GET['first']="viande";
+        break;
+    case "/Canstore/boutique.php?first=legumes";
+    case "/Canstore/L%C3%A9gumes";
+    case "/Canstore/Legumes";
+    case "/Canstore/legume";
+        $look = array("CanStore : nos légumes", "Nos meilleurs légumes");
+        $_GET['first']="legumes";
+        break;
+    case "/Canstore/boutique.php?first=soupe";
+    case "/Canstore/soupes";
+    case "/Canstore/soupe";
+    case "/Canstore/Soupe";
+        $look = array("CanStore : nos soupes", "Nos meilleurs soupes");
+        $_GET['first']="soupe";
+        break;
+    case "/Canstore/";
+        $look = array("CanStore : tous nos produits", "Tous nos produits");
+        $_GET['first']="soupe";
+        break;
+    default;
+        $look = array("CanStore : Votre sélection", "Votre sélection");
+        break;
 }
-//si pas de post
-elseif(empty($_POST)) {
-  $_POST['category'] = 'Tous'; $_POST['nutriscore']='Tous';$_POST['searchTerm']='';
-}
+
+
 
 include("modele/connexion.php");
 include("modele/produits.php");
@@ -26,75 +74,16 @@ include("modele/cat.php");
 // recuperation des categories
 $cats = categorie();
 
+
 ?>
-<body>
-  <header>
-    <h1><a href="index.html">Au jardin en boite</a></h1>
-  </header>
-  <div>
-    <aside>
-      <form name="saisie" id="saisie" method="post">
-        <div>
-          <label for="category">Catégorie :</label>
-          <select id="category" name="category">
-          <option <?php if ($_POST['category']=='Tous'){echo 'selected';}?> >Tous</option>
-            <?php
-            
-            foreach($cats as $cat)
-{ 
-  echo  "<option ";
-  if ($_POST['category']==$cat->type){echo 'selected';}
-  echo ">$cat->type</option>";
-}
-      ?>
-          </select>
-        </div>
-        <div>
-          <label for="nutriscore">Nutriscore :</label>
-          <select id="nutriscore" name="nutriscore">
-            <option selected>Tous</option>
-            <option <?php if ($_POST['nutriscore']=='A'){echo 'selected';}?> >A</option>
-            <option <?php if ($_POST['nutriscore']=='B'){echo 'selected';}?>>B</option>
-            <option <?php if ($_POST['nutriscore']=='C'){echo 'selected';}?>>C</option>
-            <option <?php if ($_POST['nutriscore']=='D'){echo 'selected';}?>>D</option>
-            <option <?php if ($_POST['nutriscore']=='E'){echo 'selected';}?>>E</option>
-          </select>
-        </div>
-        <div>
-          <label for="searchTerm">Recherche :</label>
-          <input type="text" id="searchTerm" name="searchTerm" placeholder="ex : Petits pois" <?php echo "value=".$_POST['searchTerm']; ?>>
-        </div>
-        <div>
-          <button>GO !</button>
-        </div>
-      </form>
-    </aside>
-    <main>
-      <?php
-// recuperation des produits
-$resultats = selection($_POST['category'] ,$_POST['nutriscore'],$_POST['searchTerm']);
-   
-    if ( is_string($resultats)) echo $resultats;
-    else
-    foreach($resultats as $objet)
-{ ?>
-  
-  <section class="<?php echo $objet->type ?>">
-  <h2><?php echo $objet->nom ?></h2>
-  <p><?php echo $objet->prix ?> €</p>
-  <img src="images/<?php echo $objet->image ?>" alt="<?php echo $objet->nom ?>">
-  <h3>Nutriscore : <span class="<?php echo $objet->nutriscore ?>">
-  <?php echo $objet->nutriscore ?></span></h3></section>
+<?
+if ($a == 1):
+    echo 'Il y a '.$var.' résultat';
+elseif ($a > 1):
+    echo 'Il y a '.$var.' résultats';
+else:
+    echo "Il y a une erreur";
+    echo "!!!";
+endif;
+?>
 
-<?php
-}
-      ?>
-    </main>
-  </div>
-  <footer>
-  </footer>
-
-
-</body>
-
-</html>
