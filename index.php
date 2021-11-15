@@ -1,7 +1,7 @@
 <?php
 /*** Récupération de la clé de la route ***/
 $origine = str_replace(dirname($_SERVER['PHP_SELF']), '', $_SERVER['REQUEST_URI']);
- echo $origine;
+//echo $origine;
 // echo '<br>'.dirname($_SERVER['PHP_SELF']);
 // ROUTES + TXT ACCUEIL + TITLE
 // $routes = array(
@@ -74,16 +74,4 @@ include("modele/cat.php");
 // recuperation des categories
 $cats = categorie();
 
-
-?>
-<?
-if ($a == 1):
-    echo 'Il y a '.$var.' résultat';
-elseif ($a > 1):
-    echo 'Il y a '.$var.' résultats';
-else:
-    echo "Il y a une erreur";
-    echo "!!!";
-endif;
-?>
-
+include("boutique.php");
